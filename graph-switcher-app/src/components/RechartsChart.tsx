@@ -1,4 +1,5 @@
-// src/components/RechartsChart.js
+// src/components/RechartsChart.tsx
+import React from 'react';
 import {
   ComposedChart,
   Bar,
@@ -10,17 +11,22 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import { chartData } from '../data/chartData';
+import { chartData } from '../data/chartData'; // ChartDataItem をインポート
+import type { ChartDataItem } from '../data/chartData'; // ChartDataItem をインポート
 
-const RechartsChart = () => {
+interface FormattedRechartsDataItem extends ChartDataItem {
+    name: string; // Recharts の XAxis で使用するカテゴリ名
+}
+
+const RechartsChart: React.FC = () => {
   // Rechartsは日付オブジェクトを直接扱えるが、XAxisのnameに表示するためにnameプロパティを追加
-  const formattedData = chartData.map(d => ({
+  const formattedData: FormattedRechartsDataItem[] = chartData.map((d: ChartDataItem) => ({
     ...d,
-    name: new Date(d.date).toLocaleDateString('ja-JP', { month: 'short' }) // "1月", "2月" のように表示
+    name: new Date(d.date).toLocaleDateString('ja-JP', { month: 'short' })
   }));
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: 800, height: 500 }}>
       <h3>Recharts 複合グラフ</h3>
       <ResponsiveContainer>
         <ComposedChart

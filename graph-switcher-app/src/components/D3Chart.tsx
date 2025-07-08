@@ -1,46 +1,76 @@
-// src/components/D3Chart.js
+// src/components/D3Chart.tsx
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
+import type { ChartDataItem } from '../data/chartData'; // ChartDataItem をインポート
 import { chartData } from '../data/chartData';
 
-const D3Chart = () => {
-  const svgRef = useRef('');
+// D3で整形後のデータの型定義
+interface FormattedDataItem {
+  date: Date;
+  quantity: number;
+  price: number;
+}
+
+const D3Chart: React.FC = () => {
+  const svgRef = useRef<SVGSVGElement | null>(null); // useRef の型を指定
+  const chartWidth = 800;
+  const chartHeight = 500;
 
   useEffect(() => {
-    const data = chartData.map(d => ({
-      date: d3.timeParse("%Y-%m-%d")(d.date),
+    // データを整形し、型を適用
+    const parsedData: FormattedDataItem[] = chartData.map((d: ChartDataItem) => ({
+      date: d3.timeParse("%Y-%m-%d")(d.date) as Date, // d3.timeParse は Date | null を返すため、as Date で断言
       quantity: +d.quantity,
       price: +d.price
     }));
+
+    // SVG要素が存在しない場合は何もしない
+    if (!svgRef.current) return;
 
     // 古いグラフをクリア
     d3.select(svgRef.current).selectAll("*").remove();
 
     const margin = { top: 60, right: 80, bottom: 40, left: 60 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const width = chartWidth - margin.left - margin.right;
+    const height = chartHeight - margin.top - margin.bottom;
 
+    // SVG要素を選択し、グループ要素を追加
     const svg = d3.select(svgRef.current)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", chartWidth)
+      .attr("height", chartHeight)
+      // ここでSVGの背景色をダークに設定
+      .style("background-color", "#333") // ダークグレーの背景
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // スケール
-    const xScale = d3.scaleBand()
-      .domain(data.map(d => d.date))
+    const xScale = d3.scaleBand<Date>() // domain の型を指定
+      .domain(parsedData.map(d => d.date))
       .range([0, width])
       .padding(0.3);
 
-    const yScaleQuantity = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.quantity) * 1.1])
+    const yScaleQuantity = d3.scaleLinear<number, number>() // domain と range の型を指定
+      .domain([0, d3.max(parsedData, d => d.quantity)! * 1.1]) // d3.max は undefined を返す可能性があるため ! で断言
       .range([height, 0]);
 
-    const yScalePrice = d3.scaleLinear()
-      .domain([d3.min(data, d => d.price) * 0.9, d3.max(data, d => d.price) * 1.1])
+    const yScalePrice = d3.scaleLinear<number, number>()
+      .domain([d3.min(parsedData, d => d.price)! * 0.9, d3.max(parsedData, d => d.price)! * 1.1])
       .range([height, 0]);
 
-    // 軸
+    // グリッド線ジェネレータ
+    // const makeYGridlinesQuantity = () => d3.axisLeft(yScaleQuantity).ticks(5);
+
+    // 左Y軸のグリッド線
+    svg.append("g")
+      .attr("class", "d3-grid")
+      .call(
+        d3.axisLeft(yScaleQuantity)
+          .ticks(5)
+          .tickSize(-width)
+          .tickFormat(() => "")
+      );
+
+    // 軸の描画
     svg.append("g")
       .attr("class", "d3-axis d3-x-axis")
       .attr("transform", `translate(0,${height})`)
@@ -48,7 +78,7 @@ const D3Chart = () => {
 
     svg.append("g")
       .attr("class", "d3-axis d3-y-axis-quantity")
-      .call(d3.axisLeft(yScaleQuantity))
+      .call(d3.axisLeft(yScaleQuantity).ticks(5))
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", -margin.left + 15)
@@ -61,7 +91,7 @@ const D3Chart = () => {
     svg.append("g")
       .attr("class", "d3-axis d3-y-axis-price")
       .attr("transform", `translate(${width},0)`)
-      .call(d3.axisRight(yScalePrice))
+      .call(d3.axisRight(yScalePrice).ticks(5))
       .append("text")
       .attr("transform", "rotate(90)")
       .attr("y", -margin.right + 15)
@@ -72,41 +102,42 @@ const D3Chart = () => {
       .text("価格");
 
     // 棒グラフ
-    svg.selectAll(".d3-bar")
-      .data(data)
+    svg.selectAll<SVGRectElement, FormattedDataItem>(".d3-bar") // 選択要素とデータ型を指定
+      .data(parsedData)
       .enter().append("rect")
       .attr("class", "d3-bar")
-      .attr("x", d => xScale(d.date))
+      .attr("x", d => xScale(d.date)!) // d3.scaleBand の戻り値は undefined の可能性があるので ! で断言
       .attr("y", d => yScaleQuantity(d.quantity))
       .attr("width", xScale.bandwidth())
       .attr("height", d => height - yScaleQuantity(d.quantity));
 
-    // 折れ線グラフ
-    const line = d3.line()
-      .x(d => xScale(d.date) + xScale.bandwidth() / 2)
+    // 折れ線グラフのジェネレータ
+    const line = d3.line<FormattedDataItem>() // データ型を指定
+      .x(d => xScale(d.date)! + xScale.bandwidth() / 2)
       .y(d => yScalePrice(d.price));
 
+    // 折れ線グラフ
     svg.append("path")
-      .datum(data)
+      .datum(parsedData) // datum にもデータ型を指定
       .attr("class", "d3-line")
       .attr("d", line);
 
     // 折れ線グラフの点
-    svg.selectAll(".d3-dot")
-      .data(data)
+    svg.selectAll<SVGCircleElement, FormattedDataItem>(".d3-dot") // 選択要素とデータ型を指定
+      .data(parsedData)
       .enter().append("circle")
       .attr("class", "d3-dot")
-      .attr("cx", d => xScale(d.date) + xScale.bandwidth() / 2)
+      .attr("cx", d => xScale(d.date)! + xScale.bandwidth() / 2)
       .attr("cy", d => yScalePrice(d.price))
       .attr("r", 4)
       .attr("fill", "orange")
       .attr("stroke", "white")
       .attr("stroke-width", 1.5);
 
-    // 凡例 (D3側でCSSクラスで色を指定)
+    // 凡例
     const legend = svg.append("g")
         .attr("class", "d3-legend")
-        .attr("transform", `translate(${width - 120}, ${-margin.top + 20})`);
+        .attr("transform", `translate(${width - 120}, ${-margin.top + 5})`);
 
     legend.append("rect")
         .attr("x", 0)
@@ -119,6 +150,7 @@ const D3Chart = () => {
         .attr("x", 24)
         .attr("y", 9)
         .attr("dy", ".35em")
+        .attr("fill", "#ddd") // 凡例の文字色を明るい色に
         .text("数量");
 
     legend.append("rect")
@@ -132,9 +164,9 @@ const D3Chart = () => {
         .attr("x", 24)
         .attr("y", 34)
         .attr("dy", ".35em")
+        .attr("fill", "#ddd") // 凡例の文字色を明るい色に
         .text("価格");
-
-  }, []); // 依存配列が空なので、マウント時に一度だけ実行
+  }, []);
 
   return (
     <div style={{ textAlign: 'center' }}>

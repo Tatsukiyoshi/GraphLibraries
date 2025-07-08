@@ -1,5 +1,13 @@
-// src/data/chartData.js
-export const chartData = [
+// src/data/chartData.ts
+
+// データの型を定義
+export interface ChartDataItem {
+    date: string;
+    quantity: number;
+    price: number;
+}
+
+export const chartData: ChartDataItem[] = [
     { date: "2024-01-01", quantity: 120, price: 500 },
     { date: "2024-02-01", quantity: 150, price: 520 },
     { date: "2024-03-01", quantity: 100, price: 480 },
@@ -14,6 +22,6 @@ export const chartData = [
     { date: "2024-12-01", quantity: 200, price: 580 }
 ];
 
-export const labels = chartData.map(d => new Date(d.date).toLocaleDateString('ja-JP', { month: 'short' }));
-export const quantityData = chartData.map(d => d.quantity);
-export const priceData = chartData.map(d => d.price);
+export const labels: string[] = chartData.map(d => new Date(d.date).toLocaleDateString('ja-JP', { month: 'short' }));
+export const quantityData: number[] = chartData.map(d => d.quantity);
+export const priceData: number[] = chartData.map(d => d.price);
