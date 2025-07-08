@@ -1,0 +1,69 @@
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.button-container {
+  margin-bottom: 20px;
+}
+
+.button-container button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.button-container button:hover {
+  background-color: #e0e0e0;
+}
+
+.button-container button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.chart-container {
+  width: 800px; /* Chart.js の親要素の幅を固定 */
+  height: 500px; /* Chart.js の親要素の高さを固定 */
+  border: 1px solid #eee;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 auto;
+  max-width: 900px; /* グラフの最大幅を設定 */
+  height: 500px; /* グラフコンテナの高さを固定 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 各グラフ固有のスタイル（必要に応じて） */
+#d3-chart-svg {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+}
+.d3-bar {
+    fill: steelblue;
+    opacity: 0.8;
+}
+.d3-line {
+    fill: none;
+    stroke: orange;
+    stroke-width: 2px;
+}
+.d3-axis path,
+.d3-axis line {
+    fill: none;
+    stroke: #333;
+    shape-rendering: crispEdges;
+}
+.d3-axis text {
+    font-size: 10px;
+}
