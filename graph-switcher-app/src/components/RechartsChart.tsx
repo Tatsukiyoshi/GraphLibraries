@@ -35,6 +35,14 @@ const RechartsChart: React.FC<RechartsChartProps> = ({ theme }) => {
   const yPriceMin = priceMin * 0.9;
   const yPriceMax = priceMax * 1.1;
 
+  // 50間隔の目盛り配列を生成
+  const priceTicks: number[] = [];
+  const start = Math.floor(yPriceMin / 50) * 50;
+  const end = Math.ceil(yPriceMax / 50) * 50;
+  for (let v = start; v <= end; v += 50) {
+    priceTicks.push(v);
+  }
+
   // テーマごとの色設定
   const bgColor = theme === 'dark' ? '#222' : '#fff';
   const fontColor = theme === 'dark' ? '#eee' : '#222';
@@ -60,6 +68,7 @@ const RechartsChart: React.FC<RechartsChartProps> = ({ theme }) => {
             tick={{ fill: fontColor }}
             label={{ value: '価格', angle: 90, position: 'insideRight', fill: fontColor }}
             domain={[yPriceMin, yPriceMax]} // D3と同じルール
+            ticks={priceTicks} // 50間隔で明示的に指定
           />
           <Tooltip contentStyle={{ background: bgColor, color: fontColor, borderColor: gridColor }} />
           <Legend wrapperStyle={{ color: fontColor }} />

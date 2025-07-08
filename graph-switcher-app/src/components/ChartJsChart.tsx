@@ -112,7 +112,6 @@ const ChartJsChart: React.FC<ChartJsChartProps> = ({ theme }) => {
           display: true,
           text: '数量'
         },
-        beginAtZero: true,
         grid: {
           drawOnChartArea: false,
           color: gridColor
@@ -126,13 +125,14 @@ const ChartJsChart: React.FC<ChartJsChartProps> = ({ theme }) => {
           display: true,
           text: '価格'
         },
+        beginAtZero: false,
         grid: {
           drawOnChartArea: false,
           color: gridColor
         },
-        min: yPriceMin, // D3と同じルール
-        max: yPriceMax, // D3と同じルール
-        ticks: { color: fontColor }
+        ticks: { color: fontColor },
+        suggestedMin: yPriceMin, // D3と同じルール
+        suggestedMax: yPriceMax  // D3と同じルール
       }
     }
   };
