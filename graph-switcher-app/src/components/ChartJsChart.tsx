@@ -1,7 +1,7 @@
 // src/components/ChartJsChart.tsx
 import React, { useEffect, useRef } from 'react';
 import { Chart } from 'react-chartjs-2'; // Chart.jsのReactラッパー
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, BarController, LineController } from 'chart.js';
 import { labels, quantityData, priceData } from '../data/chartData';
 import type { ChartData, ChartOptions } from 'chart.js';
 
@@ -14,7 +14,9 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  BarController,    // 追加
+  LineController    // 追加
 );
 
 const ChartJsChart: React.FC = () => {
