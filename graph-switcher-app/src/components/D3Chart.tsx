@@ -11,10 +11,18 @@ interface FormattedDataItem {
   price: number;
 }
 
-const D3Chart: React.FC = () => {
+interface D3ChartProps {
+  theme: 'light' | 'dark';
+}
+
+const D3Chart: React.FC<D3ChartProps> = ({ theme }) => {
   const svgRef = useRef<SVGSVGElement | null>(null); // useRef の型を指定
   const chartWidth = 800;
   const chartHeight = 500;
+
+  const bgColor = theme === 'dark' ? '#222' : '#fff';
+  const fontColor = theme === 'dark' ? '#eee' : '#222';
+  const gridColor = theme === 'dark' ? '#444' : '#ccc';
 
   useEffect(() => {
     // データを整形し、型を適用
@@ -38,8 +46,7 @@ const D3Chart: React.FC = () => {
     const svg = d3.select(svgRef.current)
       .attr("width", chartWidth)
       .attr("height", chartHeight)
-      // ここでSVGの背景色をダークに設定
-      .style("background-color", "#333") // ダークグレーの背景
+      .style("background-color", bgColor)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -74,7 +81,10 @@ const D3Chart: React.FC = () => {
     svg.append("g")
       .attr("class", "d3-axis d3-x-axis")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%m月")));
+      .call(
+        d3.axisBottom(xScale)
+          .tickFormat(d3.timeFormat("%-m月")) // 0埋めなしの月表示に変更
+      );
 
     svg.append("g")
       .attr("class", "d3-axis d3-y-axis-quantity")
@@ -150,7 +160,7 @@ const D3Chart: React.FC = () => {
         .attr("x", 24)
         .attr("y", 9)
         .attr("dy", ".35em")
-        .attr("fill", "#ddd") // 凡例の文字色を明るい色に
+        .attr("fill", fontColor)
         .text("数量");
 
     legend.append("rect")
@@ -164,12 +174,17 @@ const D3Chart: React.FC = () => {
         .attr("x", 24)
         .attr("y", 34)
         .attr("dy", ".35em")
-        .attr("fill", "#ddd") // 凡例の文字色を明るい色に
+        .attr("fill", fontColor)
         .text("価格");
-  }, []);
+
+    // 軸やラベルの色をテーマに応じて変更
+    svg.selectAll('.d3-axis text').attr('fill', fontColor);
+    svg.selectAll('.d3-axis path').attr('stroke', fontColor);
+    svg.selectAll('.d3-axis line').attr('stroke', gridColor);
+  }, [theme]);
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', background: bgColor, color: fontColor }}>
       <h3>D3.js 複合グラフ</h3>
       <svg ref={svgRef} id="d3-chart-svg"></svg>
     </div>
