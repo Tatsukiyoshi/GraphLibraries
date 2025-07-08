@@ -25,6 +25,12 @@ const RechartsChart: React.FC = () => {
     name: new Date(d.date).toLocaleDateString('ja-JP', { month: 'short' })
   }));
 
+  // 価格データの最小・最大値を取得し、D3と同じルールで余白を追加
+  const priceMin = Math.min(...chartData.map(d => d.price));
+  const priceMax = Math.max(...chartData.map(d => d.price));
+  const yPriceMin = priceMin * 0.9;
+  const yPriceMax = priceMax * 1.1;
+
   return (
     <div style={{ width: 800, height: 500 }}>
       <h3>Recharts 複合グラフ</h3>
@@ -38,7 +44,13 @@ const RechartsChart: React.FC = () => {
           {/* 左Y軸 (数量) */}
           <YAxis yAxisId="quantity" orientation="left" stroke="#8884d8" label={{ value: '数量', angle: -90, position: 'insideLeft' }} />
           {/* 右Y軸 (価格) */}
-          <YAxis yAxisId="price" orientation="right" stroke="#82ca9d" label={{ value: '価格', angle: 90, position: 'insideRight' }} />
+          <YAxis
+            yAxisId="price"
+            orientation="right"
+            stroke="#82ca9d"
+            label={{ value: '価格', angle: 90, position: 'insideRight' }}
+            domain={[yPriceMin, yPriceMax]} // D3と同じルール
+          />
           <Tooltip />
           <Legend />
 
