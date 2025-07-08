@@ -19,7 +19,11 @@ ChartJS.register(
   LineController    // 追加
 );
 
-const ChartJsChart: React.FC = () => {
+interface ChartJsChartProps {
+  theme: 'light' | 'dark';
+}
+
+const ChartJsChart: React.FC<ChartJsChartProps> = ({ theme }) => {
   const chartRef = useRef<ChartJS<'bar' | 'line'> | null>(null); // ChartJS インスタンスの型を指定
 
   useEffect(() => {
@@ -62,18 +66,34 @@ const ChartJsChart: React.FC = () => {
     ]
   };
 
+  // テーマごとの色設定
+  const bgColor = theme === 'dark' ? '#222' : '#fff';
+  const fontColor = theme === 'dark' ? '#eee' : '#222';
+  const gridColor = theme === 'dark' ? '#444' : '#ccc';
+
   // ChartOptions の型を指定
   const options: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     maintainAspectRatio: false, // 親要素のサイズに合わせる
     plugins: {
+      legend: {
+        labels: {
+          color: fontColor
+        }
+      },
       title: {
         display: true,
-        text: '月別 数量と価格の推移'
+        text: '月別 数量と価格の推移',
+        color: fontColor
       },
       tooltip: {
         mode: 'index',
         intersect: false,
+        backgroundColor: bgColor,
+        titleColor: fontColor,
+        bodyColor: fontColor,
+        borderColor: gridColor,
+        borderWidth: 1
       }
     },
     scales: {
@@ -81,7 +101,9 @@ const ChartJsChart: React.FC = () => {
         title: {
           display: true,
           text: '月'
-        }
+        },
+        ticks: { color: fontColor },
+        grid: { color: gridColor }
       },
       'y-quantity': {
         type: 'linear',
@@ -92,8 +114,10 @@ const ChartJsChart: React.FC = () => {
         },
         beginAtZero: true,
         grid: {
-          drawOnChartArea: false
-        }
+          drawOnChartArea: false,
+          color: gridColor
+        },
+        ticks: { color: fontColor }
       },
       'y-price': {
         type: 'linear',
@@ -103,16 +127,18 @@ const ChartJsChart: React.FC = () => {
           text: '価格'
         },
         grid: {
-          drawOnChartArea: false
+          drawOnChartArea: false,
+          color: gridColor
         },
         min: yPriceMin, // D3と同じルール
-        max: yPriceMax  // D3と同じルール
+        max: yPriceMax, // D3と同じルール
+        ticks: { color: fontColor }
       }
     }
   };
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%', background: bgColor, color: fontColor }}>
       <h3>Chart.js 複合グラフ</h3>
       <Chart
         ref={chartRef}
