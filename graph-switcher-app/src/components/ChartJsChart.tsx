@@ -1,8 +1,9 @@
-// src/components/ChartJsChart.js
-import { useEffect, useRef } from 'react';
+// src/components/ChartJsChart.tsx
+import React, { useEffect, useRef } from 'react';
 import { Chart } from 'react-chartjs-2'; // Chart.jsのReactラッパー
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import { labels, quantityData, priceData } from '../data/chartData';
+import type { ChartData, ChartOptions } from 'chart.js';
 
 // Chart.jsのコンポーネントを登録
 ChartJS.register(
@@ -16,8 +17,8 @@ ChartJS.register(
   Legend
 );
 
-const ChartJsChart = () => {
-  const chartRef = useRef(null);
+const ChartJsChart: React.FC = () => {
+  const chartRef = useRef<ChartJS<'bar' | 'line'> | null>(null); // ChartJS インスタンスの型を指定
 
   useEffect(() => {
     // コンポーネントがアンマウントされる際に古いチャートインスタンスを破棄
@@ -28,7 +29,8 @@ const ChartJsChart = () => {
     };
   }, []);
 
-  const data = {
+  // ChartData の型を指定
+  const data: ChartData<'bar' | 'line'> = { // グラフタイプが bar と line の複合なので | で指定
     labels: labels,
     datasets: [
       {
@@ -42,7 +44,7 @@ const ChartJsChart = () => {
       {
         label: '価格 (折れ線)',
         data: priceData,
-        type: 'line',
+        type: 'line' as const, // Chart.js の type はリテラル型として扱う
         borderColor: 'rgba(255, 159, 64, 1)',
         backgroundColor: 'rgba(255, 159, 64, 0.2)',
         fill: false,
@@ -52,7 +54,8 @@ const ChartJsChart = () => {
     ]
   };
 
-  const options = {
+  // ChartOptions の型を指定
+  const options: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     maintainAspectRatio: false, // 親要素のサイズに合わせる
     plugins: {
@@ -105,7 +108,7 @@ const ChartJsChart = () => {
       <h3>Chart.js 複合グラフ</h3>
       <Chart
         ref={chartRef}
-        type='bar'
+        type='bar' // デフォルトタイプ
         data={data}
         options={options}
       />

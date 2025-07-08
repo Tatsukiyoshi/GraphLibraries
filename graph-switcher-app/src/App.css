@@ -13,7 +13,6 @@
   margin: 0 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f0f0f0;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
@@ -25,16 +24,13 @@
 
 .button-container button.active {
   background-color: #007bff;
-  color: white;
   border-color: #007bff;
 }
 
 .chart-container {
   width: 800px; /* Chart.js の親要素の幅を固定 */
-  height: 500px; /* Chart.js の親要素の高さを固定 */
-  border: 1px solid #eee;
+  height: 600px; /* Chart.js の親要素の高さを固定 */
   padding: 20px;
-  background-color: #fff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin: 0 auto;
   max-width: 900px; /* グラフの最大幅を設定 */
@@ -46,7 +42,7 @@
 
 /* 各グラフ固有のスタイル（必要に応じて） */
 #d3-chart-svg {
-    background-color: #f9f9f9;
+    background-color: black;
     border: 1px solid #ccc;
 }
 .d3-bar {
