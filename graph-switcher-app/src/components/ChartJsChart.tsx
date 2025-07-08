@@ -31,6 +31,12 @@ const ChartJsChart: React.FC = () => {
     };
   }, []);
 
+  // 価格データの最小・最大値を取得し、D3と同じルールで余白を追加
+  const priceMin = Math.min(...priceData);
+  const priceMax = Math.max(...priceData);
+  const yPriceMin = priceMin * 0.9;
+  const yPriceMax = priceMax * 1.1;
+
   // ChartData の型を指定
   const data: ChartData<'bar' | 'line'> = { // グラフタイプが bar と line の複合なので | で指定
     labels: labels,
@@ -99,8 +105,8 @@ const ChartJsChart: React.FC = () => {
         grid: {
           drawOnChartArea: false
         },
-        min: 400,
-        max: 600
+        min: yPriceMin, // D3と同じルール
+        max: yPriceMax  // D3と同じルール
       }
     }
   };
