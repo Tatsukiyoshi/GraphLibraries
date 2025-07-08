@@ -81,7 +81,10 @@ const D3Chart: React.FC<D3ChartProps> = ({ theme }) => {
     svg.append("g")
       .attr("class", "d3-axis d3-x-axis")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%m月")));
+      .call(
+        d3.axisBottom(xScale)
+          .tickFormat(d3.timeFormat("%-m月")) // 0埋めなしの月表示に変更
+      );
 
     svg.append("g")
       .attr("class", "d3-axis d3-y-axis-quantity")
