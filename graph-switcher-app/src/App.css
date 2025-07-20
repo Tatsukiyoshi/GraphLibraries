@@ -29,12 +29,11 @@
 
 .chart-container {
   width: 800px; /* Chart.js の親要素の幅を固定 */
-  height: 600px; /* Chart.js の親要素の高さを固定 */
+  height: 500px; /* グラフコンテナの高さを固定 */
+  max-width: 900px; /* グラフの最大幅を設定 */
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin: 0 auto;
-  max-width: 900px; /* グラフの最大幅を設定 */
-  height: 500px; /* グラフコンテナの高さを固定 */
   display: flex;
   justify-content: center;
   align-items: center;
