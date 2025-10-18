@@ -53,6 +53,7 @@ const RechartsChart: React.FC<RechartsChartProps> = ({ theme }) => {
       <ComposedChart
         data={formattedData}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        style={{ width: 800, height: 500 }}
         responsive
       >
         <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
